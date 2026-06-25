@@ -60,12 +60,12 @@
   left=8pt,right=8pt,top=6pt,bottom=6pt,breakable}
 
 % ===================== Datos del grupo (COMPLETAR) ==================
-\newcommand{\proyTitulo}{«título del proyecto»}
-\newcommand{\proyIntegrantes}{ \\
+\newcommand{\proyTitulo}{Predicción de la Deserción y el Éxito Académico de los Estudiantes}
+\newcommand{\proyIntegrantes}{%
 - Pablo Ignacio Balbontin Constenla \\
 - Melany Esmeralda Reyes Leiva \\
 - Ingeborg Andrea Munoz Carnot \\
-- Mario Alejandro Lopez Pulgar
+- Mario Alejandro Lopez Pulgar%
 }
 \newcommand{\proyDataset}{Predict Students Dropout and Academic Success}
 \newcommand{\proyDocente}{Jean Paul Maidana González}
@@ -98,7 +98,7 @@
 \setlength{\extrarowheight}{5pt}
 \begin{tabular}{@{}>{\bfseries\color{negro}}l l@{}}
 Título del proyecto: & \proyTitulo \\
-Integrantes:         & \proyIntegrantes \\
+Integrantes:         & \begin{tabular}[t]{@{}l@{}} \proyIntegrantes \end{tabular} \\
 Dataset:             & \proyDataset \\
 Docente:             & \proyDocente \\
 Fecha:               & \proyFecha \\

@@ -1,0 +1,418 @@
+\documentclass[11pt,a4paper]{article}
+
+% ===================== Codificación y fuentes =====================
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+
+% ===================== Página y utilidades ========================
+\usepackage[left=2.5cm,right=2.5cm,top=2.5cm,bottom=2.5cm]{geometry}
+\usepackage{array}
+\usepackage{enumitem}
+\usepackage{graphicx}
+\usepackage{xcolor}
+\usepackage{titlesec}
+\usepackage{fancyhdr}
+\usepackage[most]{tcolorbox}
+\usepackage{hyperref}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{float}
+\usepackage{caption}
+\usepackage{multirow}
+\usepackage{amsmath}
+
+% ===================== Etiquetas en español (sin babel) ===========
+\renewcommand{\contentsname}{Índice}
+\renewcommand{\figurename}{Figura}
+\renewcommand{\tablename}{Tabla}
+\renewcommand{\refname}{Bibliografía}
+
+% ===================== Escala de grises ===========================
+\definecolor{negro}{RGB}{0,0,0}
+\definecolor{gris}{RGB}{90,90,90}
+\definecolor{grismedio}{RGB}{150,150,150}
+\definecolor{grisclaro}{RGB}{245,245,245}
+\definecolor{fillgray}{RGB}{175,175,175}
+
+% ================ COLORES ================
+\definecolor{azulunab}{RGB}{10, 45, 90}
+\definecolor{grisclaro}{RGB}{245, 245, 245}
+\definecolor{rojodropout}{RGB}{214, 39, 40}
+\definecolor{azulenrolled}{RGB}{31, 119, 180}
+\definecolor{verdegraduate}{RGB}{44, 160, 44}
+
+
+% ===================== Hipervínculos (negro) =======================
+\hypersetup{colorlinks=true, linkcolor=negro, urlcolor=negro, citecolor=negro}
+
+% ===================== Estilo de títulos ===========================
+\titleformat{\section}{\large\bfseries\color{negro}}{\thesection.}{0.5em}{}
+\titleformat{\subsection}{\normalsize\bfseries\color{negro}}{\thesubsection}{0.5em}{}
+\titlespacing*{\section}{0pt}{1.4em}{0.4em}
+\titlespacing*{\subsection}{0pt}{1.0em}{0.3em}
+
+% ===================== Pie de página ===============================
+\pagestyle{fancy}
+\fancyhf{}
+\fancyfoot[L]{\footnotesize\color{gris}Magíster en Ciencia de Datos e Inteligencia Artificial}
+\fancyfoot[R]{\footnotesize\color{gris}\thepage}
+\renewcommand{\headrulewidth}{0pt}
+\renewcommand{\footrulewidth}{0.4pt}
+
+% ===================== Caja de información ========================
+\newtcolorbox{infobox}[1][Información de la actividad]{colback=black!3,colframe=negro,
+  fonttitle=\bfseries,coltitle=white,title={#1},boxrule=0.6pt,arc=1pt,
+  left=8pt,right=8pt,top=6pt,bottom=6pt,breakable}
+
+% ===================== Datos del grupo ============================
+\newcommand{\proyTitulo}{Predicción de la Deserción y el Éxito Académico de los Estudiantes}
+\newcommand{\proyIntegrantes}{%
+- Pablo Ignacio Balbontin Constenla \\
+- Melany Esmeralda Reyes Leiva \\
+- Ingeborg Andrea Munoz Carnot \\
+- Mario Alejandro Lopez Pulgar%
+}
+\newcommand{\proyDataset}{Predict Students' Dropout and Academic Success}
+\newcommand{\proyDocente}{Jean Paul Maidana González}
+\newcommand{\proyFecha}{25/06/2026}
+\newcommand{\proyRepo}{\url{https://github.com/dark452/mcdi501-grupo1}}
+
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0.35em}
+
+% =================================================================
+\begin{document}
+\pagenumbering{gobble}
+
+% ===================== PORTADA ====================================
+\thispagestyle{empty}
+\begin{center}
+\vspace*{1.0cm}
+\includegraphics[height=4.4cm]{logo_unab.png}\\[1.3cm]
+
+{\footnotesize\color{gris}\MakeUppercase{Magíster en Ciencia de Datos e Inteligencia Artificial}}\\[0.15cm]
+{\footnotesize\color{grismedio}MCDI501: Estadística Computacional para la Toma de Decisiones}\\[2.0cm]
+
+{\Large\bfseries\color{negro} Evaluación Formativa 1 - Análisis Exploratorio de Datos}\\[0.45cm]
+{\large\color{negro} Predicción de Deserción y Éxito Académico en Educación Superior}\\[1.0cm]
+
+{\small\itshape\color{gris} Trabajo Grupal \textperiodcentered\ (formativa)}
+\end{center}
+
+\vspace{1.6cm}
+
+\begin{flushleft}
+\setlength{\extrarowheight}{5pt}
+\begin{tabular}{@{}>{\bfseries\color{negro}}l l@{}}
+Título del proyecto: & \proyTitulo \\
+Integrantes:         & \begin{tabular}[t]{@{}l@{}} \proyIntegrantes \end{tabular} \\
+Dataset:             & \proyDataset \\
+Docente:             & \proyDocente \\
+Fecha:               & \proyFecha \\
+Repositorio GitHub:  & \proyRepo \\
+\end{tabular}
+\end{flushleft}
+
+\clearpage
+\pagenumbering{arabic}
+
+\vspace{0.5em}
+\tableofcontents
+\newpage
+
+% =================================================================
+\section{Contexto del Conjunto de Datos}
+% =================================================================
+
+El dataset \textit{Predict Students' Dropout and Academic Success} fue elaborado por
+Realinho et al.\ (2022) a partir de registros administrativos del Instituto Politécnico de
+Portalegre, Portugal. Recoge información de estudiantes matriculados en distintas carreras
+de pregrado entre 2008 y 2019.
+
+El problema central es de relevancia institucional directa: la deserción estudiantil en
+educación superior implica costos académicos, económicos y sociales para el estudiante, la
+institución y el sistema educativo. Identificar, en etapas tempranas, los factores asociados
+al abandono permite implementar intervenciones preventivas y mejorar las tasas de
+graduación.
+
+El conjunto de datos contiene \textbf{4.424 observaciones} (estudiantes) y
+\textbf{37 variables}, sin valores faltantes declarados.
+
+% =================================================================
+\section{Problemática Preliminar Identificada}
+% =================================================================
+
+La pregunta analítica central es:
+
+\begin{quote}
+  \textit{¿Qué características demográficas, socioeconómicas y de desempeño académico
+  están asociadas al abandono estudiantil, en comparación con aquellas que se relacionan
+  con la graduación exitosa?}
+\end{quote}
+
+Esta pregunta se operacionaliza mediante la variable objetivo \texttt{Target}, que toma tres
+valores mutuamente excluyentes: \textcolor{rojodropout}{\textbf{Dropout}} (32,1\%),
+\textcolor{azulenrolled}{\textbf{Enrolled}} (17,9\%) y
+\textcolor{verdegraduate}{\textbf{Graduate}} (49,9\%).
+
+La distribución desbalanceada entre clases es un aspecto relevante que deberá considerarse
+en fases de modelado predictivo. Para la exploración estadística actual, el foco está en
+identificar qué variables discriminan mejor entre estos tres grupos.
+
+% =================================================================
+\section{Clasificación de Variables}
+% =================================================================
+
+Las 37 variables del dataset se clasifican siguiendo la taxonomía estadística estándar
+(Maidana, 2026): variables cualitativas (nominales y ordinales) y variables cuantitativas
+(discretas y continuas). Un error crítico a evitar es tratar como cuantitativa cualquier
+variable que contenga números pero represente una categoría codificada.
+
+\subsection{Variables Cualitativas Nominales}
+
+Son variables que representan categorías sin orden natural entre ellas. En este dataset,
+la mayoría corresponde a características demográficas y de identificación codificadas
+numéricamente.
+
+\begin{longtable}{p{6.5cm} p{4.5cm} p{3.5cm}}
+  \toprule
+  \textbf{Variable} & \textbf{Descripción breve} & \textbf{Nota de clasificación} \\
+  \midrule
+  \endfirsthead
+  \multicolumn{3}{c}{\small\itshape (continuación)}\\
+  \toprule
+  \textbf{Variable} & \textbf{Descripción breve} & \textbf{Nota de clasificación} \\
+  \midrule
+  \endhead
+  \bottomrule
+  \endlastfoot
+  Marital status            & Estado civil                  & 6 categorías codificadas \\
+  Application mode          & Modo de postulación           & 18 modalidades \\
+  Course                    & Carrera universitaria         & 17 carreras (código) \\
+  Previous qualification    & Tipo de titulación previa     & 43 categorías \\
+  Nacionality               & Nacionalidad del estudiante   & 21 países \\
+  Mother's qualification    & Nivel educacional madre       & Identificador de nivel \\
+  Father's qualification    & Nivel educacional padre       & Identificador de nivel \\
+  Mother's occupation       & Ocupación laboral madre       & Código ocupación \\
+  Father's occupation       & Ocupación laboral padre       & Código ocupación \\
+  Gender                    & Género (0=F, 1=M)             & Binaria \\
+  Displaced                 & Estudiante desplazado         & Binaria (0/1) \\
+  Educational special needs & Necesidades educativas esp.   & Binaria (0/1) \\
+  Debtor                    & Deudor con la institución     & Binaria (0/1) \\
+  Tuition fees up to date   & Pagos de matrícula al día     & Binaria (0/1) \\
+  Scholarship holder        & Becado                        & Binaria (0/1) \\
+  International             & Estudiante internacional      & Binaria (0/1) \\
+  Target                    & \textbf{Variable objetivo}    & Dropout/Enrolled/Graduate \\
+\end{longtable}
+
+\subsection{Variables Cualitativas Ordinales}
+
+Presentan un orden lógico entre categorías, aunque las distancias entre ellas no son
+necesariamente iguales.
+
+\begin{table}[H]
+  \centering
+  \begin{tabular}{p{6cm} p{5cm} p{3cm}}
+    \toprule
+    \textbf{Variable} & \textbf{Descripción} & \textbf{Orden} \\
+    \midrule
+    Application order    & Orden de preferencia en la postulación & 1 = primera opción \\
+    Daytime/evening attendance & Jornada de asistencia & 0=nocturna, 1=diurna \\
+    \bottomrule
+  \end{tabular}
+  \caption{Variables cualitativas ordinales}
+\end{table}
+
+\subsection{Variables Cuantitativas Continuas}
+
+Representan magnitudes reales en las que las operaciones aritméticas tienen interpretación
+válida y entre dos valores siempre existe otro.
+
+\begin{table}[H]
+  \centering
+  \begin{tabular}{p{7cm} p{4.5cm} p{2.5cm}}
+    \toprule
+    \textbf{Variable} & \textbf{Descripción} & \textbf{Rango} \\
+    \midrule
+    Previous qualification (grade) & Nota de titulación previa       & 95 -- 190 \\
+    Admission grade                 & Nota de ingreso a la carrera    & 95 -- 190 \\
+    Curricular units 1st sem (grade)& Promedio académico 1er semestre & 0 -- 18.88 \\
+    Curricular units 2nd sem (grade)& Promedio académico 2do semestre & 0 -- 18.57 \\
+    Unemployment rate               & Tasa de desempleo (\%)          & 7.6 -- 16.2 \\
+    Inflation rate                  & Tasa de inflación (\%)          & -0.8 -- 3.7 \\
+    GDP                             & Variación del PIB               & -4.06 -- 3.51 \\
+    \bottomrule
+  \end{tabular}
+  \caption{Variables cuantitativas continuas}
+\end{table}
+
+\subsection{Variables Cuantitativas Discretas}
+
+Toman valores enteros contables; representan cantidades de unidades curriculares.
+
+\begin{table}[H]
+  \centering
+  \begin{tabular}{p{8cm} p{6cm}}
+    \toprule
+    \textbf{Variable} & \textbf{Descripción} \\
+    \midrule
+    Age at enrollment                              & Edad al matricularse (17--70 años) \\
+    Curricular units 1st sem (credited)            & Unidades acreditadas por reconocimiento \\
+    Curricular units 1st sem (enrolled)            & Unidades matriculadas en 1er semestre \\
+    Curricular units 1st sem (evaluations)         & Unidades con evaluación cursadas \\
+    Curricular units 1st sem (approved)            & Unidades aprobadas en 1er semestre \\
+    Curricular units 1st sem (without evaluations) & Unidades sin evaluación \\
+    Curricular units 2nd sem (credited)            & (análogo para 2do semestre) \\
+    Curricular units 2nd sem (enrolled)            & \\
+    Curricular units 2nd sem (evaluations)         & \\
+    Curricular units 2nd sem (approved)            & \\
+    Curricular units 2nd sem (without evaluations) & \\
+    \bottomrule
+  \end{tabular}
+  \caption{Variables cuantitativas discretas}
+\end{table}
+
+% =================================================================
+\section{Ficha Descriptiva del Dataset}
+% =================================================================
+
+\begin{table}[H]
+  \centering
+  \colorbox{grisclaro}{%
+  \begin{tabular}{p{5cm} p{9cm}}
+    \toprule
+    \multicolumn{2}{c}{\textbf{FICHA DESCRIPTIVA DEL DATASET}} \\
+    \midrule
+    \textbf{Nombre}           & Predict Students' Dropout and Academic Success \\
+    \textbf{Fuente}           & UCI ML Repository -- Realinho et al.\ (2022) \\
+    \textbf{Origen}           & Instituto Politécnico de Portalegre, Portugal \\
+    \textbf{Período}          & Estudiantes matriculados 2008--2019 \\
+    \textbf{Observaciones}    & 4.424 filas (estudiantes) \\
+    \textbf{Variables total}  & 37 (36 predictoras + 1 objetivo) \\
+    \textbf{Variable objetivo}& \texttt{Target}: Graduate / Dropout / Enrolled \\
+    \textbf{Distribución obj.}& Graduate 49.9\% | Dropout 32.1\% | Enrolled 17.9\% \\
+    \textbf{Valores faltantes}& Ninguno \\
+    \textbf{Formato}          & CSV separado por punto y coma (;) \\
+    \textbf{Tipo de problema} & Clasificación multiclase \\
+    \bottomrule
+  \end{tabular}%
+  }
+  \caption{Ficha descriptiva del dataset}
+\end{table}
+
+\subsection{Agrupación de variables por dimensión analítica}
+
+\begin{table}[H]
+  \centering
+  \begin{tabular}{p{4.5cm} p{7cm} p{2.5cm}}
+    \toprule
+    \textbf{Dimensión} & \textbf{Variables incluidas} & \textbf{Tipo} \\
+    \midrule
+    Perfil demográfico    & Estado civil, género, edad, nacionalidad, desplazado, internacional & Nominal/Discreta \\
+    Historial académico   & Titulación previa, nota previa, nota admisión, modo postulación & Nominal/Continua \\
+    Contexto familiar     & Calificación y ocupación de madre y padre & Nominal \\
+    Situación financiera  & Deudor, pago al día, becado & Nominal (binaria) \\
+    Desempeño académico   & Unidades y notas en 1er y 2do semestre & Discreta/Continua \\
+    Contexto macroeconómico & Desempleo, inflación, PIB & Continua \\
+    \bottomrule
+  \end{tabular}
+  \caption{Agrupación de variables por dimensión analítica}
+\end{table}
+
+% =================================================================
+\section{Relaciones Preliminares Identificadas}
+% =================================================================
+
+El análisis exploratorio permite identificar las siguientes relaciones hipotéticas entre
+variables y el resultado académico:
+
+\begin{enumerate}[leftmargin=*, label=\textbf{R\arabic*.}]
+
+  \item \textbf{Rendimiento académico $\rightarrow$ Resultado (relación esperada fuerte)}\\
+  Las notas y unidades aprobadas en 1er y 2do semestre constituyen la dimensión con mayor
+  poder discriminativo esperado. Los estudiantes con cero unidades aprobadas en el primer
+  semestre tienen alta probabilidad de pertenecer al grupo Dropout. Esta relación es directa
+  y operacionalizable.
+
+  \item \textbf{Situación financiera $\rightarrow$ Resultado}\\
+  Las variables \texttt{Debtor}, \texttt{Tuition fees up to date} y
+  \texttt{Scholarship holder} son binarias que codifican el estado económico del estudiante.
+  Estudiantes deudores o con pagos atrasados presentan mayor proporción de abandono. La
+  beca funciona como factor protector.
+
+  \item \textbf{Edad al ingreso $\rightarrow$ Resultado}\\
+  Estudiantes que se matriculan a mayor edad (estudiantes no tradicionales) presentan mayor
+  tasa de abandono, probablemente por la concurrencia de obligaciones laborales o familiares.
+  La distribución es asimétrica positiva, con concentración en 18--25 años.
+
+  \item \textbf{Historial académico previo $\rightarrow$ Resultado}\\
+  La nota de admisión y la nota de la titulación previa son indicadores del nivel académico
+  de entrada. Valores más altos correlacionan positivamente con la graduación.
+
+  \item \textbf{Contexto macroeconómico $\rightarrow$ Resultado (relación indirecta)}\\
+  Las variables \texttt{Unemployment rate}, \texttt{Inflation rate} y \texttt{GDP} reflejan
+  el entorno económico al momento de matricularse. Su relación con el resultado académico es
+  probablemente mediada por la situación financiera del estudiante, no directa.
+
+  \item \textbf{Carrera y modo de postulación $\rightarrow$ Resultado}\\
+  Distintas carreras tienen diferentes tasas de graduación y deserción, lo que sugiere que
+  los factores institucionales (carga académica, recursos, duración) también inciden. Esta
+  variable debe tratarse como nominal con alta cardinalidad (17 categorías).
+
+\end{enumerate}
+
+% =================================================================
+\section{Consideraciones sobre Tipado}
+% =================================================================
+
+Una decisión técnica relevante en la preparación del dataset es la corrección de tipos en
+pandas. Al cargar el archivo, la mayoría de variables categóricas se importan como
+\texttt{int64}, lo que puede inducir a aplicarles operaciones estadísticas incorrectas
+(por ejemplo, calcular el promedio del código de carrera).
+
+Las acciones de tipado recomendadas son:
+
+\begin{itemize}
+  \item Convertir variables binarias (0/1) a \texttt{bool}: \texttt{Displaced},
+        \texttt{Debtor}, \texttt{Scholarship holder}, etc.
+  \item Convertir variables con menos del 50\% de valores únicos a \texttt{category}:
+        \texttt{Marital status}, \texttt{Course}, \texttt{Nacionality}, etc.
+  \item Aplicar \textit{downcast} a enteros de rango pequeño:
+        \texttt{Age at enrollment} puede almacenarse como \texttt{int8}.
+  \item Mantener como \texttt{float64} las variables de notas y macroeconómicas.
+\end{itemize}
+
+Estas conversiones reducen el consumo de memoria en aproximadamente 60\% y aseguran que
+las funciones de agrupación y visualización operen sobre los tipos correctos.
+
+% =================================================================
+\section{Observaciones sobre Calidad de los Datos}
+% =================================================================
+
+\begin{itemize}
+  \item No se detectaron valores nulos en ninguna columna.
+  \item La variable \texttt{Age at enrollment} presenta un rango de 17 a 70 años. Los
+        valores superiores a 50 son atípicos (posiblemente estudiantes en programas nocturnos
+        o de educación continua) y deben revisarse antes del modelado.
+  \item Las notas de semestre pueden tomar valor 0, lo que puede indicar abandono durante el
+        período académico, más que un desempeño evaluado en cero.
+  \item La columna \texttt{Curricular units 1st sem (without evaluations)} requiere
+        atención: un valor alto puede reflejar retiro parcial de asignaturas.
+\end{itemize}
+
+% =================================================================
+\section*{Referencias}
+\addcontentsline{toc}{section}{Referencias}
+% =================================================================
+
+\begin{itemize}
+  \item Maidana, J.P. (2026). \textit{Tipos de variables y exploración de datos con pandas}
+        [Apunte]. Universidad Andrés Bello, Santiago, Chile.
+  \item Realinho, V., Machado, J., Baptista, L., \& Martins, M.V. (2022). Predicting student
+        dropout and academic success. \textit{Data}, 7(11), 146.
+        \url{https://doi.org/10.3390/data7110146}
+  \item UCI Machine Learning Repository. (2022). \textit{Predict Students' Dropout and
+        Academic Success}. \url{https://archive.ics.uci.edu/dataset/697}
+\end{itemize}
+
+\end{document}

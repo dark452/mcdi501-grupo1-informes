@@ -1,4 +1,7 @@
 \documentclass[11pt,a4paper]{article}
+\usepackage[es-CL]{datetime2}
+\DTMsetdatestyle{ddmmyyyy}
+\DTMsetup{datesep=/}
 
 % ===================== Codificación y fuentes =====================
 \usepackage[utf8]{inputenc}
@@ -57,10 +60,16 @@
 
 % ===================== Datos del grupo ==================
 \newcommand{\proyTitulo}{Análisis Estadístico de Deserción en Educación Superior}
-\newcommand{\proyIntegrantes}{Pablo Ignacio Balbontín Constenla, Melany Esmeralda Reyes Leiva, Ingeborg Andrea Muñoz Carnot, Mario Alejandro López Pulgar}
+\newcommand{\proyIntegrantes}{
+%
+- Pablo Ignacio Balbontín Constenla \\
+- Melany Esmeralda Reyes Leiva \\
+- Ingeborg Andrea Muñoz Carnot \\
+- Mario Alejandro López Pulgar%
+}
 \newcommand{\proyDataset}{Predict Students' Dropout and Academic Success (UCI, 2022)}
 \newcommand{\proyDocente}{Jean Paul Maidana González}
-\newcommand{\proyFecha}{[Completar DD/MM/AAAA]}
+\newcommand{\proyFecha}{\today}
 \newcommand{\proyRepo}{\url{https://github.com/dark452/mcdi501-grupo1}}
 
 \setlength{\parindent}{0pt}
@@ -89,7 +98,7 @@
 \setlength{\extrarowheight}{5pt}
 \begin{tabular}{@{}>{\bfseries\color{negro}}l p{10.5cm}@{}}
 Título del proyecto: & \proyTitulo \\
-Integrantes:         & \proyIntegrantes \\
+Integrantes:         & \begin{tabular}[t]{@{}l@{}} \proyIntegrantes \end{tabular} \\
 Dataset:             & \proyDataset \\
 Docente:             & \proyDocente \\
 Fecha:               & \proyFecha \\

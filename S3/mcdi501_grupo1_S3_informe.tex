@@ -1,0 +1,446 @@
+\documentclass[11pt,a4paper]{article}
+
+% ===================== Codificación y fuentes =====================
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+
+% ===================== Página y utilidades ========================
+\usepackage[left=2.2cm,right=2.2cm,top=2.2cm,bottom=2.2cm]{geometry}
+\usepackage{array}
+\usepackage{enumitem}
+\usepackage{graphicx}
+\usepackage{xcolor}
+\usepackage{titlesec}
+\usepackage{fancyhdr}
+\usepackage[most]{tcolorbox}
+\usepackage{hyperref}
+\usepackage{booktabs}
+
+% ===================== Etiquetas en español (sin babel) ===========
+\renewcommand{\contentsname}{Índice}
+\renewcommand{\figurename}{Figura}
+\renewcommand{\tablename}{Tabla}
+\renewcommand{\refname}{Bibliografía}
+
+% ===================== Escala de grises (sin color) ================
+\definecolor{negro}{RGB}{0,0,0}
+\definecolor{gris}{RGB}{90,90,90}
+\definecolor{grisclaro}{RGB}{150,150,150}
+\definecolor{fillgray}{RGB}{175,175,175}
+
+% ===================== Hipervínculos (negro) =======================
+\hypersetup{colorlinks=true, linkcolor=negro, urlcolor=negro, citecolor=negro}
+
+% ===================== Estilo de títulos ===========================
+\titleformat{\section}{\large\bfseries\color{negro}}{\thesection.}{0.5em}{}
+\titleformat{\subsection}{\normalsize\bfseries\color{negro}}{\thesubsection}{0.5em}{}
+\titlespacing*{\section}{0pt}{1.1em}{0.3em}
+\titlespacing*{\subsection}{0pt}{0.8em}{0.2em}
+
+% ===================== Pie de página ===============================
+\pagestyle{fancy}
+\fancyhf{}
+\fancyfoot[L]{\footnotesize\color{gris}Magíster en Ciencia de Datos e Inteligencia Artificial}
+\fancyfoot[R]{\footnotesize\color{gris}\thepage}
+\renewcommand{\headrulewidth}{0pt}
+\renewcommand{\footrulewidth}{0.4pt}
+
+% Caja de información de la evaluación (escala de grises):
+\newtcolorbox{infobox}[1][Información de la evaluación]{colback=black!3,colframe=negro,
+  fonttitle=\bfseries,coltitle=white,title={#1},boxrule=0.6pt,arc=1pt,
+  left=8pt,right=8pt,top=6pt,bottom=6pt,breakable}
+
+% Caja de conexión con evaluaciones previas (gris, sin color):
+\newtcolorbox{conexionbox}[1][Conexión con evaluaciones anteriores]{colback=black!6,colframe=gris,
+  fonttitle=\bfseries,coltitle=white,title={#1},boxrule=0.6pt,arc=1pt,
+  left=8pt,right=8pt,top=6pt,bottom=6pt,breakable}
+
+% ===================== Datos del grupo ==================
+\newcommand{\proyTitulo}{Análisis Estadístico de Deserción en Educación Superior}
+\newcommand{\proyIntegrantes}{Pablo Ignacio Balbontín Constenla, Melany Esmeralda Reyes Leiva, Ingeborg Andrea Muñoz Carnot, Mario Alejandro López Pulgar}
+\newcommand{\proyDataset}{Predict Students' Dropout and Academic Success (UCI, 2022)}
+\newcommand{\proyDocente}{Jean Paul Maidana González}
+\newcommand{\proyFecha}{[Completar DD/MM/AAAA]}
+\newcommand{\proyRepo}{\url{https://github.com/dark452/mcdi501-grupo1}}
+
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0.32em}
+
+\begin{document}
+\pagenumbering{gobble}
+
+\thispagestyle{empty}
+\begin{center}
+\vspace*{0.8cm}
+\includegraphics[height=3.6cm]{logo_unab.png}\\[1.0cm]
+
+{\footnotesize\color{gris}\MakeUppercase{Magíster en Ciencia de Datos e Inteligencia Artificial}}\\[0.15cm]
+{\footnotesize\color{grisclaro}MCDI501: Estadística Computacional para la Toma de Decisiones}\\[1.6cm]
+
+{\Large\bfseries\color{negro} Evaluación Sumativa 3}\\[0.45cm]
+{\large\color{negro} Modelamiento Predictivo Integrado}\\[0.8cm]
+
+{\small\itshape\color{gris} Informe técnico grupal \textperiodcentered\ 60\,\%}
+\end{center}
+
+\vspace{1.2cm}
+
+\begin{flushleft}
+\setlength{\extrarowheight}{5pt}
+\begin{tabular}{@{}>{\bfseries\color{negro}}l p{10.5cm}@{}}
+Título del proyecto: & \proyTitulo \\
+Integrantes:         & \proyIntegrantes \\
+Dataset:             & \proyDataset \\
+Docente:             & \proyDocente \\
+Fecha:               & \proyFecha \\
+Repositorio GitHub:  & \proyRepo \\
+\end{tabular}
+\end{flushleft}
+
+\clearpage
+\pagenumbering{arabic}
+\begin{infobox}
+\textbf{Fase del proyecto:} Fase 4: Presentación y comunicación\\
+\textbf{Modalidad:} Grupal\qquad\textbf{Ponderación:} 60\,\% de la nota final\\
+\textbf{Entregables:} Informe final PDF (máx.\ 10 págs.)\ \textperiodcentered\ Notebook maestro \texttt{.ipynb}\ \textperiodcentered\ Presentación (video o en vivo)\ \textperiodcentered\ Repositorio GitHub completo\\
+\textbf{Resultados de aprendizaje:} RA1, RA2, RA3 (esta evaluación los integra).\\
+\textbf{Prerrequisitos:} Sumativas 1 y 2 completadas (usarán sus resultados).
+\end{infobox}
+\begin{conexionbox}
+Esta evaluación \textbf{no es independiente}: todas las decisiones metodológicas (manejo de datos faltantes, selección de variables, validación de modelos, evaluación de desempeño y análisis de robustez) se fundamentan directamente en los hallazgos de S1 y S2. Se documenta explícitamente la progresión S1 $\to$ S2 $\to$ S3 en cada sección.
+\end{conexionbox}
+
+\vspace{0.3em}
+\tableofcontents
+\newpage
+
+\section{Manejo inteligente de datos faltantes}
+
+\subsection{Referencia al análisis de faltantes de S1}
+
+S1 (\texttt{F2.ipynb}) reportó el dataset \textbf{completo}: 4.424 filas, 0{,}0\,\% de valores
+faltantes y 0 duplicados tras la limpieza inicial. No existe, por tanto, un patrón MCAR/MAR/MNAR
+\emph{real} documentado en S1. Para cumplir el requisito de esta rúbrica sin contradecir ese
+hallazgo, se introduce un patrón de faltantes \textbf{sintético, documentado y reproducible}
+(\texttt{seed=42}) sobre tres variables ya caracterizadas por S1/S2 en su matriz de correlaciones
+(nota de admisión, nota del 1\textsuperscript{er} semestre, edad al matricularse), replicando los
+tres mecanismos canónicos exigidos por el enunciado (Tabla~\ref{tab:faltantes}). Este paso se
+declara como ejercicio metodológico de S3, no como un hallazgo adicional de calidad de datos.
+
+\begin{table}[h]
+\centering
+\small
+\begin{tabular}{@{}p{4.1cm}ccp{5.4cm}@{}}
+\toprule
+Variable & Mec. & \% falt. & Diseño \\
+\midrule
+Admission grade & MCAR & 6{,}26\,\% (277) & probabilidad constante e independiente \\
+Curric.\ 1st sem.\ (grade) & MAR & 6{,}98\,\% (309) & depende de beca y matrícula al día (observables) \\
+Age at enrollment & MNAR & 4{,}84\,\% (214) & depende del propio valor (cola superior) \\
+\bottomrule
+\end{tabular}
+\caption{Patrón de faltantes simulado sobre el dataset de S1 (n=4.424).}
+\label{tab:faltantes}
+\end{table}
+
+\subsection{Imputación mediante regresión lineal múltiple}
+
+Para cada variable se seleccionaron 3--4 predictores mediante la matriz de correlaciones de S1
+(Tabla~\ref{tab:imputacion}), evitando usar como predictor otra variable con faltantes simulados.
+Los modelos se ajustaron únicamente con observaciones completas.
+
+\begin{table}[h]
+\centering
+\small
+\begin{tabular}{@{}p{3.6cm}p{6.0cm}cc@{}}
+\toprule
+Variable imputada & Predictores principales & $R^2$ adj. & Imputados \\
+\midrule
+Admission grade & Prev.\ qualification (grade), Curric.\ 2do sem.\ nota & 0{,}334 & 277 (6{,}3\,\%) \\
+Curric.\ 1er sem.\ (grade) & Curric.\ 2do sem.\ nota, matrícula al día & 0{,}705 & 309 (7{,}0\,\%) \\
+Age at enrollment & Displaced, beca, matrícula al día & 0{,}176 & 214 (4{,}8\,\%) \\
+\bottomrule
+\end{tabular}
+\caption{Modelos de imputación por regresión y su desempeño.}
+\label{tab:imputacion}
+\end{table}
+
+Los residuos de los tres modelos rechazan Shapiro-Wilk y Breusch-Pagan ($p<0{,}001$): la
+normalidad y homocedasticidad no se cumplen estrictamente, lo cual es esperable en variables con
+colas y ceros estructurales. Se documenta como limitación; la imputación por regresión se adopta
+igualmente porque preserva mejor las correlaciones bivariadas de S1 que las alternativas (ver
+\S1.3).
+
+\subsection{Comparación de estrategias de imputación}
+
+\begin{table}[h]
+\centering
+\small
+\begin{tabular}{@{}lccc@{}}
+\toprule
+Estrategia & $n$ & $r$(Curric.\,1er\,sem., Target) & $r$(Edad, Target) \\
+\midrule
+A: Eliminación & 3.658 & 0{,}478 & $-$0{,}234 \\
+B: Imputación simple (mediana) & 4.424 & 0{,}450 & $-$0{,}237 \\
+C: Imputación por regresión & 4.424 & 0{,}492 & $-$0{,}248 \\
+\emph{Referencia original S1} & \emph{4.424} & \emph{0{,}485} & \emph{$-$0{,}243} \\
+\bottomrule
+\end{tabular}
+\caption{Comparación de estrategias A/B/C sobre el dataset completo.}
+\label{tab:comparacion_estrategias}
+\end{table}
+
+\textbf{Estrategia elegida: C (regresión).} A descarta 766 filas (17{,}3\,\%) sin ganancia
+compensatoria; B comprime la varianza y atenúa correlaciones. C conserva el 100\,\% de las filas
+y reproduce con mayor fidelidad las correlaciones de S1 (0{,}492 vs.\ 0{,}485 original, frente a
+0{,}450 de B). Se retoma la comparación a nivel del \emph{modelo final} en la Sección~3.
+
+\section{Clasificación mediante regresión logística}
+
+\subsection{Preparación de datos informada por S1}
+
+Se usa el dataset imputado (estrategia C). Los outliers de S1 (notas de admisión en el techo de
+escala =190; estudiantes de 60--70 años) \textbf{se conservan}, siguiendo la recomendación
+explícita de S2 (\S6: ``conservar, no eliminar''), codificados como indicadores \texttt{admision\_techo}
+y \texttt{estudiante\_adulto} (Age$\geq$35, $\approx$p90). La variable objetivo se define como
+\textbf{Graduate vs.\ Dropout} (se excluye Enrolled), replicando exactamente el subgrupo que S1 usó
+en sus pruebas de hipótesis: $n=3.630$ (82{,}1\,\% del dataset). Split 70/30 estratificado
+($n_{train}=2.541$, $n_{test}=1.089$); variables numéricas estandarizadas (\emph{fit} solo en
+train); 21 predictores candidatos (se excluyen variables nominales de alta cardinalidad --Course,
+Nacionality-- por no ser foco de S1/S2).
+
+\subsection{Selección de variables informada por S1 y S2}
+
+\begin{table}[h]
+\centering
+\small
+\begin{tabular}{@{}lp{9cm}@{}}
+\toprule
+Modelo & Variables y criterio de selección \\
+\midrule
+\textbf{M1 (S1/S2)} & Nota admisión, edad, notas 1\textsuperscript{er}/2\textsuperscript{do} sem., beca, indicadores de outliers. \textbf{GDP excluido}: S2 (\S1 y \S3) advirtió que su significancia bootstrap está probablemente inflada por pseudo-replicación (dependencia de cohorte no resuelta). \\
+\textbf{M2 (Stepwise)} & Selección bidireccional por p-valor sobre las 21 candidatas: 12 variables, dominadas por unidades curriculares inscritas/aprobadas por semestre. \\
+\textbf{M3 (AIC)} & Eliminación hacia atrás minimizando AIC: 13 variables, casi idéntico a M2. \\
+\bottomrule
+\end{tabular}
+\caption{Variables incluidas en cada uno de los tres modelos logísticos.}
+\label{tab:modelos_vars}
+\end{table}
+
+\textbf{Interpretación (M1):} cada desviación estándar adicional en la nota del 2\textsuperscript{do}
+semestre multiplica las odds de graduación por 4{,}56 (IC95\,\%[3{,}54; 5{,}86]), consistente con
+la correlación robusta que S2 validó ($r=0{,}567$). Ser becado multiplica las odds por 3{,}97,
+cuantificando en el modelo logístico la asociación que la Prueba 2 de S1 ya había detectado
+(Cramér's V=0{,}30). M2 y M3 convergen en variables que S1 \textbf{no incluyó} en su matriz de
+correlaciones original (limitada a 5 variables numéricas), lo que explica la brecha de desempeño
+de la Sección~2.5.
+
+\subsection{Evaluación de estabilidad mediante bootstrap}
+
+Se aplicó bootstrap ($B=2.000$ réplicas, \texttt{seed=42}, misma lógica que S2) sobre el modelo
+final (M2; justificación de la elección en \S2.5). Ninguna réplica falló en converger.
+
+\begin{table}[h]
+\centering
+\footnotesize
+\begin{tabular}{@{}lrrrl@{}}
+\toprule
+Variable (OR) & OR puntual & IC95\,\% tradicional & IC95\,\% bootstrap & Estado \\
+\midrule
+Curric.\ 2do sem.\ (aprob.) & 25{,}30 & [15{,}75; 40{,}62] & [16{,}60; 44{,}13] & Estable \\
+Matrícula al día & 12{,}65 & [6{,}82; 23{,}46] & [7{,}57; 24{,}81] & Estable \\
+Curric.\ 1er sem.\ (aprob.) & 6{,}02 & [3{,}62; 10{,}00] & [3{,}58; 10{,}70] & Estable \\
+Beca (Scholarship) & 2{,}27 & [1{,}56; 3{,}30] & [1{,}56; 3{,}45] & Estable \\
+Deuda (Debtor) & 0{,}29 & [0{,}17; 0{,}48] & [0{,}17; 0{,}46] & Estable \\
+Edad al matricularse & 0{,}78 & [0{,}66; 0{,}93] & [0{,}66; 0{,}91] & Estable \\
+Internacional & 3{,}77 & [1{,}23; 11{,}52] & [1{,}23; 15{,}63] & Estable (mayor dispersión) \\
+\bottomrule
+\end{tabular}
+\caption{IC tradicional vs.\ IC bootstrap para odds ratios del modelo final (M2), selección de variables.}
+\label{tab:bootstrap}
+\end{table}
+
+Ningún coeficiente supera el criterio de inestabilidad (ancho IC boot $>1{,}5\times$ ancho IC
+tradicional). \texttt{International} muestra la mayor dispersión relativa (bajo $n$ muestral) sin
+cruzar el umbral. Este resultado replica, a nivel multivariado, la conclusión de estabilidad que
+S2 encontró a nivel bivariado con $n=4.424$.
+
+\subsection{Diagnóstico de supuestos}
+
+\textbf{Multicolinealidad (VIF):} las cuatro variables de unidades curriculares presentan
+VIF entre 9{,}6 y 13{,}4 (Figura~\ref{fig:vif}) -- esperable, pues son medidas del mismo
+constructo y están mecánicamente relacionadas (no se aprueban más unidades de las inscritas). El
+resto de los predictores tiene VIF$<3{,}3$. El bootstrap (\S2.3) no detectó inestabilidad
+asociada; se documenta como limitación sin remover variables adicionales.
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.62\textwidth]{fig6_vif.png}
+\caption{VIF del modelo final (M2). Umbral convencional VIF=5.}
+\label{fig:vif}
+\end{figure}
+
+\textbf{Linealidad en el logit} (Box-Tidwell): razonable para nota 2\textsuperscript{do} semestre
+($p=0{,}727$) y edad ($p=0{,}091$). \textbf{Observaciones influyentes} (distancia de Cook): 7{,}1\,\%
+sobre el umbral $4/n$, máximo 0{,}030 ($\ll1$); se conservan, siguiendo la recomendación explícita
+de S2. \textbf{Residuos de devianza:} media$=0{,}073$, sólo 3{,}0\,\% con $|resid|>2$.
+
+\subsection{Evaluación de desempeño predictivo}
+
+\begin{table}[h]
+\centering
+\small
+\begin{tabular}{@{}lrrrrrr@{}}
+\toprule
+Modelo & Vars. & AIC & Acc.\ train & Acc.\ test & AUC train & AUC test \\
+\midrule
+M1 (S1/S2) & 7 & 2152{,}3 & 0{,}805 & 0{,}793 & 0{,}874 & 0{,}873 \\
+M2 (Stepwise) & 12 & 1209{,}0 & 0{,}911 & \textbf{0{,}912} & 0{,}953 & \textbf{0{,}947} \\
+M3 (AIC) & 13 & 1208{,}9 & 0{,}910 & 0{,}912 & 0{,}953 & 0{,}947 \\
+\bottomrule
+\end{tabular}
+\caption{Comparación de desempeño (Precision test M2=0{,}901, Recall test=0{,}961, F1=0{,}930).}
+\label{tab:desempeno}
+\end{table}
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.5\textwidth]{fig3_roc_modelos.png}
+\caption{Curvas ROC de los tres modelos sobre el conjunto de prueba.}
+\label{fig:roc}
+\end{figure}
+
+\textbf{Modelo seleccionado: M2 (Stepwise).} M2 y M3 empatan en desempeño (AUC test=0{,}9466 vs.\
+0{,}9466; accuracy=0{,}9118 ambos); se prefiere M2 por parsimonia (12 vs.\ 13 variables -- M3
+agrega \texttt{admision\_techo}, nunca significativa, $p=0{,}12$) y AIC prácticamente empatado. M1,
+pese a estar mejor alineado narrativamente con S1/S2, es predictivamente inferior (AUC=0{,}873):
+esto no invalida a S1/S2 -sus hallazgos se usan explícitamente en M2 (edad, notas, beca)- sino que
+evidencia que la matriz de correlaciones original de S1 no capturó los predictores más fuertes
+(unidades curriculares aprobadas/inscritas), que sólo emergen con búsqueda sistemática.
+
+\section{Análisis comparativo del impacto de la imputación}
+
+Se reajustó la especificación del modelo final (M2) sobre los tres datasets A/B/C.
+
+\begin{table}[h]
+\centering
+\small
+\begin{tabular}{@{}lrrrr@{}}
+\toprule
+Estrategia & $n$ total & Accuracy test & AUC test & Ancho IC promedio \\
+\midrule
+A: Eliminación & 2.980 & 0{,}905 & 0{,}946 & 1{,}121 \\
+B: Imputación simple & 3.630 & 0{,}913 & 0{,}947 & 1{,}003 \\
+C: Imputación por regresión & 3.630 & 0{,}912 & 0{,}947 & 1{,}004 \\
+\bottomrule
+\end{tabular}
+\caption{Impacto de la estrategia de imputación en el modelo final.}
+\label{tab:impacto_imputacion}
+\end{table}
+
+\textbf{¿Cambian las conclusiones?} No en desempeño predictivo (AUC prácticamente idéntico entre
+las tres). Sí en precisión de estimación: A descarta 650 filas (17{,}9\,\% del subconjunto
+Graduate/Dropout) y ensancha el IC promedio $\approx$12\,\% frente a B/C, sin ganancia
+compensatoria. \textbf{Recomendación:} mantener C por consistencia metodológica con la
+Sección~1 y mayor fidelidad a las correlaciones de S1, aunque en este caso B y C sean casi
+indistinguibles en el modelo final. \textbf{Limitación:} este ejercicio se realizó sobre faltantes
+\emph{simulados}, no reales -S1 confirmó que el dataset original está completo-, por lo que sus
+conclusiones son válidas como demostración metodológica, no como corrección de un problema real.
+
+\section{Informe final integrado}
+
+\subsection{Resumen ejecutivo}
+
+Este informe integra las tres fases del proyecto sobre deserción estudiantil (UCI, $n=4.424$). S1
+identificó predictores académicos y socioeconómicos del resultado; S2 validó computacionalmente su
+robustez mediante remuestreo; S3 construye y valida un modelo de regresión logística que predice
+Graduate vs.\ Dropout con AUC test=0{,}947, e identifica que el desempeño académico intra-semestral
+(unidades cursadas y aprobadas) es el predictor dominante, complementando -sin contradecir- los
+hallazgos bivariados de S1/S2.
+
+\subsection{Introducción}
+
+El objetivo del proyecto es predecir el resultado académico de estudiantes de educación superior
+para habilitar intervenciones tempranas de retención. S1 realizó el análisis exploratorio e
+inferencial inicial; S2 sometió esos resultados a validación por simulación y remuestreo; esta
+fase (S3) aplica modelamiento predictivo supervisado -imputación, regresión logística, bootstrap-
+utilizando de forma trazable los insumos de ambas fases previas, tal como exige la rúbrica.
+
+\subsection{Metodología integrada}
+
+Se documentó un patrón de faltantes sintético (Sección~1) porque S1 no reportó faltantes reales;
+la estrategia de imputación por regresión se seleccionó por preservar mejor las correlaciones de
+S1. El modelamiento (Sección~2) definió la variable objetivo replicando el subgrupo
+Graduate/Dropout de las pruebas de hipótesis de S1, trató los outliers de S1 según la
+recomendación explícita de S2, y construyó tres modelos logísticos cuya selección de variables
+está explícitamente informada por S1 (correlaciones), S2 (estabilidad bootstrap, exclusión de
+GDP) y por búsqueda sistemática (stepwise, AIC). La validación de estabilidad del modelo final
+replicó la técnica de bootstrap de S2 a nivel multivariado.
+
+\subsection{Resultados integrados}
+
+El modelo final (M2, 12 variables) alcanza AUC test=0{,}947 y accuracy test=0{,}912, muy por
+encima del modelo basado únicamente en S1/S2 (M1, AUC=0{,}873). El bootstrap no detectó
+coeficientes inestables. La imputación por regresión (estrategia C) preserva mejor que las
+alternativas las correlaciones de S1 y no altera el desempeño del modelo final frente a B, aunque
+sí evita la pérdida de 17{,}9\,\% de la muestra que implica A.
+
+\subsection{Discusión}
+
+La progresión S1$\to$S2$\to$S3 es evidente y, a la vez, informativa sobre los límites de cada
+fase: S1/S2 identificaron correctamente las variables más \emph{interpretables} (notas, edad,
+beca), pero su matriz de correlación bivariada, acotada a variables numéricas simples, no alcanzó
+a capturar los predictores estructuralmente más fuertes (unidades curriculares
+inscritas/aprobadas), que sólo emergen con selección multivariada sistemática. Esto no es una
+contradicción de S1/S2 sino una ampliación esperable: cada fase agrega capacidad analítica sin
+invalidar la anterior. La multicolinealidad entre variables de desempeño académico (VIF$>9$) limita
+la interpretación causal aislada de esos coeficientes específicos, aunque no compromete la
+capacidad predictiva conjunta del modelo.
+
+\subsection{Conclusiones y recomendaciones}
+
+Se recomienda (1) \textbf{ampliar la cobertura de becas}: la simulación Monte Carlo de S2 estimó
++8{,}7 p.p.\ en graduación al duplicar la cobertura, y el modelo logístico de S3 confirma un
+efecto propio robusto (OR=2{,}27) controlando por desempeño académico; y (2) \textbf{monitorear
+tempranamente el desempeño del 1\textsuperscript{er} semestre} (unidades inscritas/aprobadas), el
+predictor de mayor peso y disponible antes de completar el programa, habilitando intervención
+temprana real. \textbf{Limitaciones:} el componente de imputación se ejecutó sobre faltantes
+simulados; persiste multicolinealidad no resuelta entre variables de desempeño académico; la
+recomendación de becas hereda la limitación causal ya señalada por S2 (posible sesgo de selección
+por motivación, transportabilidad no validada experimentalmente); el GDP fue excluido de M1 sin
+corregir formalmente su dependencia de cohorte (tarea pendiente para una extensión futura).
+
+\section{Presentación del proyecto}
+
+La presentación (10 minutos, video grupal) seguirá la misma progresión narrativa de este informe:
+(1) problema y dataset (1 min); (2) síntesis de hallazgos S1 -exploración, faltantes, outliers- y
+S2 -validación por bootstrap/permutación/Monte Carlo- (2 min); (3) metodología de S3 -imputación,
+los tres modelos logísticos y su selección de variables informada por S1/S2- (3 min); (4)
+resultados -desempeño comparado, bootstrap de estabilidad, impacto de la imputación- (3 min); (5)
+conclusiones y recomendaciones de política institucional (1 min). Cada integrante expone la
+sección correspondiente a su contribución técnica en el repositorio, enfatizando explícitamente
+cómo cada fase informa a la siguiente.
+
+\section{Bibliografía (APA 7)}
+
+Efron, B., \& Tibshirani, R. J. (1993). \emph{An introduction to the bootstrap}. Chapman \& Hall/CRC.
+
+Hosmer, D. W., Lemeshow, S., \& Sturdivant, R. X. (2013). \emph{Applied logistic regression} (3.\textsuperscript{a} ed.). Wiley.
+
+McKinney, W. (2022). \emph{Python for data analysis} (3.\textsuperscript{a} ed.). O'Reilly Media.
+
+Pedregosa, F., et al. (2011). Scikit-learn: Machine learning in Python. \emph{Journal of Machine Learning Research, 12}, 2825--2830.
+
+Realinho, V., Machado, J., Baptista, L., \& Martins, M. V. (2022). Predicting student dropout and academic success. \emph{Data, 7}(11), 146. \url{https://doi.org/10.3390/data7110146}
+
+Seabold, S., \& Perktold, J. (2010). Statsmodels: Econometric and statistical modeling with Python. \emph{Proceedings of the 9th Python in Science Conference}.
+
+Walpole, R. E., Myers, R. H., Myers, S. L., \& Ye, K. (2012). \emph{Probabilidad y estadística para ingeniería y ciencias} (9.\textsuperscript{a} ed.). Pearson.
+
+\begin{infobox}[Trazabilidad S1 $\to$ S2 $\to$ S3]
+Todas las decisiones metodológicas de este informe -manejo de faltantes, selección de variables,
+tratamiento de outliers, validación por bootstrap- están fundamentadas explícitamente en los
+resultados de S1 y S2, referenciados sección por sección conforme a lo exigido por la rúbrica.
+\end{infobox}
+
+\end{document}
